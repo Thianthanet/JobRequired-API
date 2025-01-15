@@ -4,48 +4,48 @@ generator client {
 
 datasource db {
     provider = "mysql"
-    url = env("DATABASE_URL")
+    url      = env("DATABASE_URL")
 }
 
 model User {
-    id Int @id @default(autoincrement())
-    username String
-    email String @unique
-    password String?
+    id        Int       @id @default(autoincrement())
+    username  String
+    email     String    @unique
+    password  String?
     firstname String?
-    lastname String?
-    picture String?
-    products Product[]
-    role String @default("user")
-    enabled Boolean @default(true)
-    address String?
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    lastname  String?
+    picture   String?
+    products  Product[]
+    role      String    @default("user")
+    enabled   Boolean   @default(true)
+    address   String?
+    createdAt DateTime  @default(now())
+    updatedAt DateTime  @updatedAt
 }
 
 model Product {
-    id Int @id @default(autoincrement())
-    title String
-    phone String
+    id          Int      @id @default(autoincrement())
+    title       String
+    phone       String
     description String
-    skill String
-    experience Int
-    address String?
-    images Image[]
-    user User @relation(fields: [userId], references: [id], onDelete: Cascade)
-    userId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    skill       String
+    experience  Int
+    address     String?
+    images      Image[]
+    user        User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+    userId      Int
+    createdAt   DateTime @default(now())
+    updatedAt   DateTime @updatedAt
 }
 
 model Image {
-    id Int @id @default(autoincrement())
-    asset_id String
-    public_id String
-    url String
+    id         Int      @id @default(autoincrement())
+    asset_id   String
+    public_id  String
+    url        String
     secure_url String
-    product Product @relation(fields: [productId], references: [id], onDelete: Cascade)
-    productId Int
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
+    product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
+    productId  Int
+    createdAt  DateTime @default(now())
+    updatedAt  DateTime @updatedAt
 }
