@@ -3,8 +3,8 @@ generator client {
 }
 
 datasource db {
-    provider = "mysql"
-    url      = env("DATABASE_URL")
+  provider = "mysql"  // Change from "postgresql" to "mysql"
+  url      = env("DATABASE_URL")
 }
 
 model User {
