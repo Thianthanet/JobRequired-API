@@ -11,6 +11,14 @@ exports.register = async (req, res) => {
             return res.status(400).json({ message: "All fields are required!" })
         }
 
+        const existingUser = await prisma.user.findUnique({
+            where: { email: email }
+        })
+
+        if (existingUser) {
+            return res.status(409).json({ message: "Email Already exists" })
+        }
+
         console.log('req.body',req.body)
         //hashpassword
         const hashpassword = await bcrypt.hash(password, 10)

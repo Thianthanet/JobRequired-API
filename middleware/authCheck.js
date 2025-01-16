@@ -5,7 +5,7 @@ exports.authCheck = async (req, res, next) => {
     try {
         const headerToken = req.headers.authorization
         if (!headerToken) {
-            res.status(401).json({ message: "No Token, Authoriazation" })
+            res.status(401).json({ message: "No Token, Authoriazation Denied" })
         }
         const token = headerToken.split(" ")[1]
         const decode = jwt.verify(token, process.env.SECRET)
@@ -17,7 +17,7 @@ exports.authCheck = async (req, res, next) => {
             }
         })
 
-        if (!user.enabled) {
+        if (!user || !user.enabled) {
             return res.status(400).json({ message: "This account cannot access!!" })
         }
         next()

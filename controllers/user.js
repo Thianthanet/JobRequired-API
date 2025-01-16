@@ -108,8 +108,6 @@ exports.userResume = async (req, res) => {
             }
         })
         res.json(user)
-
-
     }
     catch (err) {
         console.log(err)
