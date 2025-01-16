@@ -1,82 +1,100 @@
-const bcrypt = require('bcryptjs');
-const jwt = require('jsonwebtoken');
-const prisma = require('../config/prisma');
+const prisma = require('../config/prisma')
+const bcrypt = require('bcryptjs')
+const jwt = require('jsonwebtoken')
 
-// Registration
 exports.register = async (req, res) => {
     try {
-        const { username, email, firstname, lastname, password } = req.body;
+        //request parameter
+        const { username, email, firstname, lastname, password } = req.body
 
-        // Basic validation
         if (!username || !email || !firstname || !lastname || !password) {
-            return res.status(400).json({ message: "All fields are required!" });
+            return res.status(400).json({ message: "All fields are required!" })
         }
 
-        const existingUser = await prisma.user.findUnique({ where: { email } });
+        const existingUser = await prisma.user.findUnique({
+            where: { email: email }
+        })
 
         if (existingUser) {
-            return res.status(409).json({ message: "Email already exists" });
+            return res.status(409).json({ message: "Email Already exists" })
         }
 
-        const saltRounds = process.env.BCRYPT_SALT_ROUNDS || 10;
-        const hashpassword = await bcrypt.hash(password, parseInt(saltRounds));
+        console.log('req.body',req.body)
+        //hashpassword
+        const hashpassword = await bcrypt.hash(password, 10)
 
         await prisma.user.create({
-            data: { username, email, firstname, lastname, password: hashpassword }
-        });
-
-        res.json({ message: "Registration successful" });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Server error, please try again" });
+            data: {
+                username: username,
+                email: email,
+                firstname: firstname,
+                lastname: lastname,
+                password: hashpassword
+            }
+        })
+        res.json({ message: "Register Successed" })
     }
-};
+    catch (err) {
+        console.log(err)
+        res.status(500).json({ message: "Server Error" })
+    }
+}
 
-// Login
 exports.login = async (req, res) => {
     try {
-        const { username, password } = req.body;
+        const { username, password } = req.body
 
-        const user = await prisma.user.findFirst({ where: { username } });
+        const user = await prisma.user.findFirst({
+            where: {
+                username: username
+            }
+        })
 
         if (!user || !user.enabled) {
-            return res.status(400).json({ message: "User not found or not enabled" });
+            return res.status(400).json({ message: "User not found or not enabled" })
         }
 
-        const isMatch = await bcrypt.compare(password, user.password);
+        const isMatch = await bcrypt.compare(password, user.password)
         if (!isMatch) {
-            return res.status(400).json({ message: "Invalid password" });
+            return res.status(400).json({ message: "Password Invalid!!" })
         }
 
-        const payload = { id: user.id, username: user.username, email: user.email, role: user.role };
-
-        if (!process.env.SECRET) {
-            return res.status(500).json({ message: "JWT secret not configured" });
+        const payload = {
+            id: user.id,
+            username: user.username,
+            email: user.email,
+            role: user.role
         }
 
         jwt.sign(payload, process.env.SECRET, { expiresIn: '1d' }, (err, token) => {
             if (err) {
-                return res.status(500).json({ message: "Server error" });
+                return res.status(500).json({ message: "Server Error" })
             }
-            res.json({ payload, token });
-        });
-    } catch (err) {
-        console.log(err);
-        res.status(500).json({ message: "Server error, please try again" });
+            res.json({ payload, token })
+        })
     }
-};
+    catch (err) {
+        console.log(err)
+        res.status(500).json({ message: "Server Error" })
+    }
+}
 
-// Current user
 exports.currentUser = async (req, res) => {
     try {
         const user = await prisma.user.findFirst({
             where: { email: req.user.email },
-            select: { id: true, firstname: true, lastname: true, email: true, role: true }
-        });
-
-        res.json(user);
-    } catch (err) {
-        console.log(err);
-        return res.status(500).json({ message: "Server error, please try again" });
+            select: {
+                id: true,
+                firstname: true,
+                lastname: true,
+                email: true,
+                role: true
+            }
+        })
+        res.json(user)
     }
-};
+    catch (err) {
+        console.log(err)
+        return res.status(500).json({ message: "Server Error" })
+    }
+}
