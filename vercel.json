@@ -15,5 +15,11 @@
         "Access-Control-Allow-Origin": "*"
       }
     }
-  ]
+  ],
+  "functions": {
+    "api/*": {
+      "memory": 1024,
+      "maxDuration": 10
+    }
+  }
 }
