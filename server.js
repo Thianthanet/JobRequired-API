@@ -3,10 +3,12 @@ const app = express()
 const morgan = require('morgan')
 const { readdirSync } = require('fs')
 const cors = require('cors')
+const favicon = require('serve-favicon')
 
 //middleware
 app.use(express.json({ limit:'20mb' }))
 app.use(cors())
+app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(morgan('dev'))
 readdirSync('./routes').map((item) => app.use('/api', require('./routes/' + item)))
 
