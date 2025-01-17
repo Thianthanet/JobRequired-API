@@ -9,7 +9,7 @@ const favicon = require('serve-favicon')
 //middleware
 app.use(express.json({ limit:'20mb' }))
 app.use(cors())
-app.use(express.static('public'));
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(favicon(path.join(__dirname, 'public', 'favicon.ico')));
 app.use(morgan('dev'))
 readdirSync('./routes').map((item) => app.use('/api', require('./routes/' + item)))
